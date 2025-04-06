@@ -37,9 +37,10 @@ const Fitlog: React.FC = () => {
                 onSelect={setSelectedDate}
                 className="bg-white p-4 rounded-xl shadow-lg"
                 modifiersClassNames={{
-                  selected: 'bg-sky-500 text-white',
+                  selected: 'bg-sky-700 text-white',
                   today: 'text-sky-700 font-bold',
                 }}
+                disabled={{ after: new Date() }}
               />
             </div>
           </div>
