@@ -18,7 +18,6 @@ class WorkoutBase(BaseModel):
 	name: str
 	reps: int
 	weight: int
-	date: datetime
 
 	class Config:
 		from_attributes = True

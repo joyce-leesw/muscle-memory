@@ -1,14 +1,22 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from typing import List
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import models
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.add_middleware(
+	CORSMiddleware,
+	allow_origins=["*"],
+	allow_credentials=True,
+	allow_methods=["*"],
+	allow_headers=["*"],
+)
 
 def get_db():
 	db = SessionLocal()
@@ -45,4 +53,9 @@ def get_workouts_for_date(date: str, db: Session = Depends(get_db)):
 		models.Workout.date >= start_of_day,
 		models.Workout.date < end_of_day
 	).all()
-	return workouts
+
+	# Convert SQLAlchemy models to Pydantic models and then to dicts for JSON serialization
+	workout_dicts = [models.WorkoutBase.from_orm(workout).dict(exclude={"date"}) for workout in workouts]
+
+	print(workout_dicts)
+	return workout_dicts
