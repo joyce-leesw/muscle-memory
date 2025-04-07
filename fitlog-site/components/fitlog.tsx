@@ -22,7 +22,17 @@ const Fitlog: React.FC = () => {
   const completedDays = [
     new Date(2025, 3, 5),
     new Date(2025, 3, 6),
+    new Date(2025, 3, 7),
   ];
+  // const completedDays = []
+
+  // const workoutDates = workouts.map(workout => {
+  //   const dateSimplified = workout.date.split('T')[0];
+  //   const [year, month, day] = dateSimplified.split('-').map(Number);
+  //   return new Date(year, month-1, day);
+  // });
+
+  // completedDays.push(...workoutDates);
 
   const onRetrieve = (date: Date | undefined) => {
     if (!date) return;

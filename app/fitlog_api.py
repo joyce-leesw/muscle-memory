@@ -54,8 +54,8 @@ def get_workouts_for_date(date: str, db: Session = Depends(get_db)):
 		models.Workout.date < end_of_day
 	).all()
 
-	# Convert SQLAlchemy models to Pydantic models and then to dicts for JSON serialization
-	workout_dicts = [models.WorkoutBase.from_orm(workout).dict(exclude={"date"}) for workout in workouts]
+	# "date": workout.date.strftime("%Y-%m-%d")
 
-	print(workout_dicts)
-	return workout_dicts
+	workouts = [{"name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets} for workout in workouts]
+	print(workouts)
+	return workouts
