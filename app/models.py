@@ -12,12 +12,14 @@ class Workout(Base):
 	name = Column(String, nullable=False)
 	reps = Column(Integer, nullable=False)
 	weight = Column(Integer, nullable=False)
+	sets = Column(Integer, nullable=False)
 	date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 class WorkoutBase(BaseModel):
 	name: str
 	reps: int
 	weight: int
+	sets: int
 
 	class Config:
 		from_attributes = True

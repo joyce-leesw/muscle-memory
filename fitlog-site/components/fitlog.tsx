@@ -10,6 +10,7 @@ type Workout = {
   name: string;
   reps: number;
   weight: number;
+  sets: number;
 }
 
 const Fitlog: React.FC = () => {
@@ -101,7 +102,8 @@ const Fitlog: React.FC = () => {
                           </div>
                           <div className="flex space-x-4">
                             <span>{log.weight}kg</span>
-                            <span>{log.reps}</span>
+                            <span>{log.reps} reps</span>
+                            <span>{log.sets} sets</span>
                           </div>
                         </div>
                       ))

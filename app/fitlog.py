@@ -11,12 +11,13 @@ def main():
 	parser.add_argument("--name", "-n", type=str, help="Workout name")
 	parser.add_argument("--reps", "-r", type=int, help="Number of reps")
 	parser.add_argument("--weight", "-w", type=int, help="Weight used")
+	parser.add_argument("--sets", "-s", type=int, help="Number of sets")
 	parser.add_argument("--date", "-d", type=str, help="Date to fetch workouts for (YYYY-MM-DD)")
 
 	args = parser.parse_args()
 	
-	if args.name and args.reps and args.weight:
-		add_workout(args.name, args.reps, args.weight)
+	if args.name and args.reps and args.weight and args.sets:
+		add_workout(args.name, args.reps, args.weight, args.sets)
 		get_all_workouts()
 	elif args.date:
 		try:
@@ -27,14 +28,14 @@ def main():
 	else:
 		parser.print_help()
 
-def add_workout(name: str, reps: int, weight: int):
+def add_workout(name: str, reps: int, weight: int, sets=int):
 	db: Session = SessionLocal()
 	try:
-		workout = models.Workout(name=name, reps=reps, weight=weight)
+		workout = models.Workout(name=name, reps=reps, weight=weight, sets=sets)
 		db.add(workout)
 		db.commit()
 		db.refresh(workout)
-		print(f"Added workout: {workout.name} - {workout.reps} reps @ {workout.weight}kg")
+		print(f"Added workout: {workout.name} - {workout.reps} reps @ {workout.weight}kg x {workout.sets} sets")
 	finally:
 		db.close()
 
@@ -45,7 +46,7 @@ def get_all_workouts():
 		if workouts:
 			print("All Workouts:")
 			for workout in workouts:
-				print(f"{workout.name} - {workout.reps} reps @ {workout.weight}kg")
+				print(f"{workout.name} - {workout.reps} reps @ {workout.weight}kg x {workout.sets} sets")
 		else:
 			print("No workouts found.")
 	finally:
@@ -65,7 +66,7 @@ def get_workouts_for_date(selected_date: datetime):
 		if workouts:
 			print(f"Workouts on {selected_date.date()}:")
 			for workout in workouts:
-				print(f"{workout.name} - {workout.reps} reps @ {workout.weight}kg")
+				print(f"{workout.name} - {workout.reps} reps @ {workout.weight}kg x {workout.sets} sets")
 		else:
 			print(f"No workouts found on {selected_date.date()}.")
 	finally:
