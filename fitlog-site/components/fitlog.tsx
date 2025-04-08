@@ -4,55 +4,58 @@ import logo from "../public/fitlog.png";
 import Image from "next/image";
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Workout = {
   name: string;
   reps: number;
   weight: number;
   sets: number;
+  date?: string;
 }
 
 const Fitlog: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-  const [isPending, setIsPending] = useState(false);
-  const [results, setResults] = useState(false);
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [workoutsToday, setWorkoutsToday] = useState<Workout[]>([]);
+  const [allWorkouts, setAllWorkouts] = useState<Record<string, Workout[]>>({});
+  const completedDays: Date[] = [];
 
-  const completedDays = [
-    new Date(2025, 3, 5),
-    new Date(2025, 3, 6),
-    new Date(2025, 3, 7),
-  ];
-  // const completedDays = []
+  Object.keys(allWorkouts).forEach((dateStr) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    completedDays.push(new Date(year, month - 1, day));
+  })
 
-  // const workoutDates = workouts.map(workout => {
-  //   const dateSimplified = workout.date.split('T')[0];
-  //   const [year, month, day] = dateSimplified.split('-').map(Number);
-  //   return new Date(year, month-1, day);
-  // });
+  useEffect(() => {
+    fetch(`http://127.0.0.1:8000/get_all_workouts`)
+      .then((res) => res.json())
+      .then(onReceive);
+  })
 
-  // completedDays.push(...workoutDates);
+  const onReceive = (data: Workout[]) => {
+    const grouped: Record<string, Workout[]> = {};
+
+    data.forEach((workout) => {
+      if (workout.date) {
+        const dateKey = workout.date.split('T')[0];
+        if (!grouped[dateKey]) {
+          grouped[dateKey] = [];
+        }
+        grouped[dateKey].push(workout);
+      }
+    });
+
+    setAllWorkouts(grouped);
+    console.log(allWorkouts);
+  };
 
   const onRetrieve = (date: Date | undefined) => {
     if (!date) return;
-    setIsPending(true);
     setSelectedDate(date);
     const formattedDate = date.toLocaleDateString("sv-SE", {
       timeZone: "Europe/London",
     });
-    console.log("Submitting: " + formattedDate);
-    fetch(`http://127.0.0.1:8000/get_workouts_for_date/?date=${formattedDate}`)
-      .then((res) => res.json())
-      .then(onReceive);
+    setWorkoutsToday(allWorkouts[formattedDate] ?? []);
   }
-
-  const onReceive = (data: Workout[]) => {
-    console.log("workout unparsed", data);
-    setWorkouts(data);
-    setResults(true);
-    setIsPending(false);
-  };
 
   const gradientTextStyle =
     "text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-sky-700 w-fit mx-auto";
@@ -104,8 +107,8 @@ const Fitlog: React.FC = () => {
                   </button>
 
                   <div className="mt-10 space-y-2">
-                    {workouts.length > 0 ? (
-                      workouts.map((log, index) => (
+                    {workoutsToday.length > 0 ? (
+                      workoutsToday.map((log, index) => (
                         <div key={index} className="px-2 text-left">
                           <div className="flex justify-between items-center">
                             <div>

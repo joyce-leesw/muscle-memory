@@ -48,7 +48,7 @@ def get_all_workouts():
 		if workouts:
 			print("All Workouts:")
 			for workout in workouts:
-				print(f"{workout.name} - {workout.reps} reps @ {workout.weight}kg x {workout.sets} sets on {workout.date}")
+				print(f"{workout.name} - {workout.reps} reps @ {workout.weight}kg x {workout.sets} sets on {workout.date.strftime("%Y-%m-%d")}")
 		else:
 			print("No workouts found.")
 	finally:
