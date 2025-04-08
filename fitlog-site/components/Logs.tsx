@@ -17,10 +17,24 @@ const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
 	const [addWorkout, setAddWorkout] = useState(false);
 	const [newWorkout, setNewWorkout] = useState({
 		name: "",
-		reps: 0,
-		weight: 0,
-		sets: 0,
+		reps: "",
+		weight: "",
+		sets: "",
 	});
+
+	const handleNumberInput = (
+		e: React.ChangeEvent<HTMLInputElement>,
+		key: keyof typeof newWorkout,
+	) => {
+		const val = e.target.value;
+
+		if (/^\d+(\.\d+)?$/.test(val)) {
+			const num = Number(val);
+			if (num >= 0) {
+				setNewWorkout((prev) => ({ ...prev, [key]: num }));
+			}
+		}
+	};
 
 	const handleSaveWorkout = async () => {
 		try {
@@ -63,21 +77,21 @@ const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
 						type="number"
 						placeholder="Reps"
 						value={newWorkout.reps}
-						onChange={(e) => setNewWorkout({ ...newWorkout, reps: Number(e.target.value) })}
+						onChange={(e) => handleNumberInput(e, 'reps')}
 						className="w-full px-4 py-2 bg-slate-100 rounded"
 					/>
 					<input
 						type="number"
 						placeholder="Weight (kg)"
 						value={newWorkout.weight}
-						onChange={(e) => setNewWorkout({ ...newWorkout, weight: Number(e.target.value) })}
+						onChange={(e) => handleNumberInput(e, 'weight')}
 						className="w-full px-4 py-2 bg-slate-100 rounded"
 					/>
 					<input
 						type="number"
 						placeholder="Sets"
 						value={newWorkout.sets}
-						onChange={(e) => setNewWorkout({ ...newWorkout, sets: Number(e.target.value) })}
+						onChange={(e) => handleNumberInput(e, 'sets')}
 						className="w-full px-4 py-2 bg-slate-100 rounded"
 					/>
 					<div className="flex justify-end space-x-2">
