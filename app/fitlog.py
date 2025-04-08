@@ -13,14 +13,14 @@ def main():
 	parser.add_argument("--reps", "-r", type=int, help="Number of reps")
 	parser.add_argument("--weight", "-w", type=int, help="Weight used")
 	parser.add_argument("--sets", "-s", type=int, help="Number of sets")
-	parser.add_argument("--date", "-d", type=str, help="Date to fetch workouts for (YYYY-MM-DD)")
+	parser.add_argument("--date", "-d", type=str, help="Date of workout (YYYY-MM-DD)")
 
 	args = parser.parse_args()
 	
 	if args.all:
 		get_all_workouts()
-	elif args.name and args.reps and args.weight and args.sets:
-		add_workout(args.name, args.reps, args.weight, args.sets)
+	elif args.name and args.reps and args.weight and args.sets and args.date:
+		add_workout(args.name, args.reps, args.weight, args.sets, args.date)
 	elif args.date:
 		try:
 			selected_date = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
@@ -30,10 +30,10 @@ def main():
 	else:
 		parser.print_help()
 
-def add_workout(name: str, reps: int, weight: int, sets=int):
+def add_workout(name: str, reps: int, weight: int, sets=int, date=str):
 	db: Session = SessionLocal()
 	try:
-		workout = models.Workout(name=name, reps=reps, weight=weight, sets=sets)
+		workout = models.Workout(name=name, reps=reps, weight=weight, sets=sets, date=datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc))
 		db.add(workout)
 		db.commit()
 		db.refresh(workout)

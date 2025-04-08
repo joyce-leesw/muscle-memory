@@ -26,8 +26,8 @@ def get_db():
 		db.close()
 
 @app.post("/create_workout/")
-def create_workout(name: str, reps: int, weight: int, sets: int, db: Session = Depends(get_db)):
-	workout = models.Workout(name=name, reps=reps, weight=weight, sets=sets)
+def create_workout(name: str, reps: int, weight: int, sets: int, date: str, db: Session = Depends(get_db)):
+	workout = models.Workout(name=name, reps=reps, weight=weight, sets=sets, date=datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc))
 	db.add(workout)
 	db.commit()
 	db.refresh(workout)
