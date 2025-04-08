@@ -36,7 +36,7 @@ def create_workout(name: str, reps: int, weight: int, sets: int, db: Session = D
 @app.get("/get_all_workouts/", response_model=List[models.WorkoutBase])
 def get_all_workouts(db: Session = Depends(get_db)):
 	workouts = db.query(models.Workout).all()
-	return workouts
+	return [{"name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets, "date": workout.date.strftime("%Y-%m-%d")} for workout in workouts]
 
 @app.get("/get_workouts_for_date/", response_model=List[models.WorkoutBase])
 def get_workouts_for_date(date: str, db: Session = Depends(get_db)):
@@ -53,8 +53,6 @@ def get_workouts_for_date(date: str, db: Session = Depends(get_db)):
 		models.Workout.date >= start_of_day,
 		models.Workout.date < end_of_day
 	).all()
-
-	# "date": workout.date.strftime("%Y-%m-%d")
 
 	workouts = [{"name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets} for workout in workouts]
 	print(workouts)

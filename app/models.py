@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timezone
 from pydantic import BaseModel
+from typing import Optional
 
 Base = declarative_base()
 
@@ -20,7 +21,7 @@ class WorkoutBase(BaseModel):
 	reps: int
 	weight: int
 	sets: int
-	# date: datetime
+	date: Optional[datetime] = None
 
 	class Config:
 		from_attributes = True

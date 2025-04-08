@@ -8,6 +8,7 @@ models.Base.metadata.create_all(bind=engine)
 
 def main():
 	parser = argparse.ArgumentParser(description="Add a workout to the database or get workouts for a date")
+	parser.add_argument("--all", "-a", action="store_true", help="All Workouts")
 	parser.add_argument("--name", "-n", type=str, help="Workout name")
 	parser.add_argument("--reps", "-r", type=int, help="Number of reps")
 	parser.add_argument("--weight", "-w", type=int, help="Weight used")
@@ -16,9 +17,10 @@ def main():
 
 	args = parser.parse_args()
 	
-	if args.name and args.reps and args.weight and args.sets:
-		add_workout(args.name, args.reps, args.weight, args.sets)
+	if args.all:
 		get_all_workouts()
+	elif args.name and args.reps and args.weight and args.sets:
+		add_workout(args.name, args.reps, args.weight, args.sets)
 	elif args.date:
 		try:
 			selected_date = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
@@ -46,7 +48,7 @@ def get_all_workouts():
 		if workouts:
 			print("All Workouts:")
 			for workout in workouts:
-				print(f"{workout.name} - {workout.reps} reps @ {workout.weight}kg x {workout.sets} sets")
+				print(f"{workout.name} - {workout.reps} reps @ {workout.weight}kg x {workout.sets} sets on {workout.date}")
 		else:
 			print("No workouts found.")
 	finally:
