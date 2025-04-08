@@ -16,7 +16,7 @@ type Workout = {
 }
 
 const CalendarView: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [workoutsToday, setWorkoutsToday] = useState<Workout[]>([]);
   const [allWorkouts, setAllWorkouts] = useState<Record<string, Workout[]>>({});
   const completedDays: Date[] = [];
@@ -30,7 +30,7 @@ const CalendarView: React.FC = () => {
     fetch(`http://127.0.0.1:8000/get_all_workouts`)
       .then((res) => res.json())
       .then(onReceive);
-  })
+  }, [])
 
   const onReceive = (data: Workout[]) => {
     const grouped: Record<string, Workout[]> = {};
@@ -103,7 +103,7 @@ const CalendarView: React.FC = () => {
                   />
                 </div>
 
-                <Logs workoutsToday={workoutsToday}/>
+                <Logs workoutsToday={workoutsToday} date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} />
               </div>
             </div>
           </div>
