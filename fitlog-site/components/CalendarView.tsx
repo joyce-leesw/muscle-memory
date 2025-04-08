@@ -65,18 +65,22 @@ const CalendarView: React.FC = () => {
     <div className="w-screen h-screen flex justify-center items-center">
       <div className="w-md m-auto p-2">
         <div className="bg-gray-100 p-6 rounded-md">
-          <div className="text-center my-6">
-            <Image
-              src={logo}
-              width={200}
-              className="mx-auto block"
-              alt="Fitlog logo"
-            />
-            <h1 className={`${gradientTextStyle} text-3xl font-light`}>
-              Fitlog
-            </h1>
-            <div className={`${gradientTextStyle} text-lg mb-5`}>
-              Your workout logs
+          <div className="my-6">
+            <div className="flex items-center justify-center my-5">
+              <Image
+                src={logo}
+                width={60}
+                className="rotate-90"
+                alt="Fitlog logo"
+              />
+              <div>
+                <h1 className={`${gradientTextStyle} text-3xl font-light`}>
+                  Fitlog
+                </h1>
+                <div className={`${gradientTextStyle} text-lg`}>
+                  Your workout logs
+                </div>
+              </div>
             </div>
 
             <div className="flex flex-col items-center space-y-4">
