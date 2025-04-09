@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Logs from "./Logs";
 
 type Workout = {
+  id: number;
   name: string;
   reps: number;
   weight: number;

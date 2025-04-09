@@ -17,6 +17,7 @@ class Workout(Base):
 	date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 class WorkoutBase(BaseModel):
+	id: int
 	name: str
 	reps: int
 	weight: int

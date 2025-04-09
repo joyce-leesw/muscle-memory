@@ -46,7 +46,7 @@ def delete_workout(id: int, db: Session = Depends(get_db)):
 @app.get("/get_all_workouts", response_model=List[models.WorkoutBase])
 def get_all_workouts(db: Session = Depends(get_db)):
 	workouts = db.query(models.Workout).all()
-	return [{"name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets, "date": workout.date} for workout in workouts]
+	return [{"id": workout.id, "name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets, "date": workout.date} for workout in workouts]
 
 @app.get("/get_workouts_for_date", response_model=List[models.WorkoutBase])
 def get_workouts_for_date(date: str, db: Session = Depends(get_db)):
@@ -64,6 +64,6 @@ def get_workouts_for_date(date: str, db: Session = Depends(get_db)):
 		models.Workout.date < end_of_day
 	).all()
 
-	workouts = [{"name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets} for workout in workouts]
+	workouts = [{"id": workout.id, "name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets} for workout in workouts]
 	print(workouts)
 	return workouts

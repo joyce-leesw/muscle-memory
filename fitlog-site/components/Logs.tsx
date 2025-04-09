@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 type Workout = {
+	id: number;
   name: string;
   reps: number;
   weight: number;
