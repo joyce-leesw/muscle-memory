@@ -43,8 +43,8 @@ def delete_workout(id: int, db: Session = Depends(get_db)):
 	db.commit()
 	return {"message": f"Workout with ID {id} deleted successfully"}
 
-@app.put("/edit_workout")
-def edit_workout(id: int, name: Optional[str] = None, reps: Optional[int] = None, weight: Optional[int] = None, sets: Optional[int] = None, db: Session = Depends(get_db)):
+@app.put("/update_workout")
+def update_workout(id: int, name: Optional[str] = None, reps: Optional[int] = None, weight: Optional[int] = None, sets: Optional[int] = None, db: Session = Depends(get_db)):
 	workout = db.query(models.Workout).filter(models.Workout.id == id).first()
 	if not workout:
 		raise HTTPException(status_code=404, detail="Workout not found")
