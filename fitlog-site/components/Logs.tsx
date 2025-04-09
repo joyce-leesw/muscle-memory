@@ -57,6 +57,25 @@ const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
 		}
 	};
 
+	const handleDeleteWorkout = async (id: number) => {
+		try {
+			const response = await fetch(`http://127.0.0.1:8000/delete_workout?id=${id}`, {
+				method: "DELETE",
+			});
+			
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+	
+			const data = await response.json();
+			console.log(data);
+			setAddWorkout(false)
+		} catch (error) {
+			console.error("Failed to delete workout:", error);
+			alert("Something went wrong while deleting the workout.");
+		}
+	}
+
 	const handleEditWorkout = (log: Workout) => {
 		setAddWorkout(true);
 		setEditWorkoutId(log.id);
@@ -112,6 +131,14 @@ const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
 						className="w-full px-4 py-2 bg-slate-100 rounded"
 					/>
 					<div className="flex justify-end space-x-2">
+						{editWorkoutId && (
+							<button
+							onClick={() => handleDeleteWorkout(editWorkoutId)}
+							className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+							>
+								Delete
+							</button>
+						)}
 						<button
 							onClick={handleSaveWorkout}
 							className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600"
