@@ -33,6 +33,16 @@ def create_workout(name: str, reps: int, weight: int, sets: int, date: str, db: 
 	db.refresh(workout)
 	return workout
 
+@app.delete("/delete_workout/")
+def delete_workout(id: int, db: Session = Depends(get_db)):
+	workout = db.query(models.Workout).filter(models.Workout.id == id).first()
+	if not workout:
+		raise HTTPException(status_code=404, detail="Workout not found")
+
+	db.delete(workout)
+	db.commit()
+	return {"message": f"Workout with ID {id} deleted successfully"}
+
 @app.get("/get_all_workouts/", response_model=List[models.WorkoutBase])
 def get_all_workouts(db: Session = Depends(get_db)):
 	workouts = db.query(models.Workout).all()

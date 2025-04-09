@@ -14,6 +14,7 @@ def main():
 	parser.add_argument("--weight", "-w", type=int, help="Weight used")
 	parser.add_argument("--sets", "-s", type=int, help="Number of sets")
 	parser.add_argument("--date", "-d", type=str, help="Date of workout (YYYY-MM-DD)")
+	parser.add_argument("--id", "-id", type=str, help="ID of workout")
 
 	args = parser.parse_args()
 	
@@ -21,6 +22,8 @@ def main():
 		get_all_workouts()
 	elif args.name and args.reps and args.weight and args.sets and args.date:
 		add_workout(args.name, args.reps, args.weight, args.sets, args.date)
+	elif args.id:
+		delete_workout(args.id)
 	elif args.date:
 		try:
 			selected_date = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
@@ -48,9 +51,22 @@ def get_all_workouts():
 		if workouts:
 			print("All Workouts:")
 			for workout in workouts:
-				print(f"{workout.name} - {workout.reps} reps @ {workout.weight}kg x {workout.sets} sets on {workout.date.strftime("%Y-%m-%d")}")
+				print(f"{workout.id}: {workout.name} - {workout.reps} reps @ {workout.weight}kg x {workout.sets} sets on {workout.date.strftime("%Y-%m-%d")}")
 		else:
 			print("No workouts found.")
+	finally:
+		db.close()
+
+def delete_workout(workout_id: int):
+	db: Session = SessionLocal()
+	try:
+		workout = db.query(models.Workout).filter(models.Workout.id == workout_id).first()
+		if workout is None:
+			print("Workout not found")
+
+		db.delete(workout)
+		db.commit()
+		print(f"Workout with ID ${workout_id} deleted successfully")
 	finally:
 		db.close()
 
