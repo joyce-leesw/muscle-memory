@@ -27,7 +27,7 @@ const CalendarView: React.FC = () => {
   })
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/get_all_workouts/`)
+    fetch(`http://127.0.0.1:8000/get_all_workouts`)
       .then((res) => res.json())
       .then(onReceive);
   }, [])

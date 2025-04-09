@@ -25,7 +25,7 @@ def get_db():
 	finally:
 		db.close()
 
-@app.post("/create_workout/")
+@app.post("/create_workout")
 def create_workout(name: str, reps: int, weight: int, sets: int, date: str, db: Session = Depends(get_db)):
 	workout = models.Workout(name=name, reps=reps, weight=weight, sets=sets, date=datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc))
 	db.add(workout)
@@ -33,7 +33,7 @@ def create_workout(name: str, reps: int, weight: int, sets: int, date: str, db: 
 	db.refresh(workout)
 	return workout
 
-@app.delete("/delete_workout/")
+@app.delete("/delete_workout")
 def delete_workout(id: int, db: Session = Depends(get_db)):
 	workout = db.query(models.Workout).filter(models.Workout.id == id).first()
 	if not workout:
@@ -43,12 +43,12 @@ def delete_workout(id: int, db: Session = Depends(get_db)):
 	db.commit()
 	return {"message": f"Workout with ID {id} deleted successfully"}
 
-@app.get("/get_all_workouts/", response_model=List[models.WorkoutBase])
+@app.get("/get_all_workouts", response_model=List[models.WorkoutBase])
 def get_all_workouts(db: Session = Depends(get_db)):
 	workouts = db.query(models.Workout).all()
 	return [{"name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets, "date": workout.date} for workout in workouts]
 
-@app.get("/get_workouts_for_date/", response_model=List[models.WorkoutBase])
+@app.get("/get_workouts_for_date", response_model=List[models.WorkoutBase])
 def get_workouts_for_date(date: str, db: Session = Depends(get_db)):
 	try:
 		# Parse input date string (e.g., "2025-04-06")
