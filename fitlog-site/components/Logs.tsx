@@ -15,6 +15,7 @@ type Props = {
 };
 
 const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
+	const [editWorkoutId, setEditWorkoutId] = useState<number | null>(null);
 	const [addWorkout, setAddWorkout] = useState(false);
 	const [newWorkout, setNewWorkout] = useState({
 		name: "",
@@ -56,10 +57,25 @@ const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
 		}
 	};
 
+	const handleEditWorkout = (log: Workout) => {
+		setAddWorkout(true);
+		setEditWorkoutId(log.id);
+		setNewWorkout({
+			name: log.name,
+			reps: String(log.reps),
+			weight: String(log.weight),
+			sets: String(log.sets),
+		});
+	}
+
   return (
 		<div className="bg-white p-4 rounded-xl shadow-lg relative my-3 w-full">
 			<button
-				onClick={() => setAddWorkout(true)}
+				onClick={() => {
+					setAddWorkout(true)
+					setEditWorkoutId(null);
+					setNewWorkout({ name: "", reps: "", weight: "", sets: "" });
+				}}
 				className="absolute top-4 right-4 text-white bg-sky-600 hover:bg-sky-700 w-8 h-8 flex items-center justify-center rounded-full shadow"
 			>
 				+
@@ -127,7 +143,7 @@ const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
 										</div>
 									</div>
 									<button
-										// onClick={() => handleEdit(index)}
+										onClick={() => handleEditWorkout(log)}
 										className="text-blue-500 hover:text-blue-700"
 									>
 										edit &gt;
