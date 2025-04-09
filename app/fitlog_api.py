@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
-from typing import List
+from typing import List, Optional
 from datetime import datetime, timedelta, timezone
 from fastapi.middleware.cors import CORSMiddleware
 import models
@@ -42,6 +42,25 @@ def delete_workout(id: int, db: Session = Depends(get_db)):
 	db.delete(workout)
 	db.commit()
 	return {"message": f"Workout with ID {id} deleted successfully"}
+
+@app.put("/edit_workout")
+def edit_workout(id: int, name: Optional[str] = None, reps: Optional[int] = None, weight: Optional[int] = None, sets: Optional[int] = None, db: Session = Depends(get_db)):
+	workout = db.query(models.Workout).filter(models.Workout.id == id).first()
+	if not workout:
+		raise HTTPException(status_code=404, detail="Workout not found")
+	
+	if name is not None:
+			workout.name = name
+	if reps is not None:
+		workout.reps = reps
+	if weight is not None:
+		workout.weight = weight
+	if sets is not None:
+		workout.sets = sets
+
+	db.commit()
+	db.refresh(workout)
+	return {"message": f"Workout with ID {id} updated successfully"}
 
 @app.get("/get_all_workouts", response_model=List[models.WorkoutBase])
 def get_all_workouts(db: Session = Depends(get_db)):

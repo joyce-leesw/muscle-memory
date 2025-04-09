@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -22,6 +23,14 @@ def main():
 		get_all_workouts()
 	elif args.name and args.reps and args.weight and args.sets and args.date:
 		add_workout(args.name, args.reps, args.weight, args.sets, args.date)
+	elif args.id and (args.name or args.reps or args.weight or args.sets):
+		update_workout(
+			workout_id=args.id,
+			name=args.name,
+			reps=args.reps,
+			weight=args.weight,
+			sets=args.sets
+		)
 	elif args.id:
 		delete_workout(args.id)
 	elif args.date:
@@ -67,6 +76,28 @@ def delete_workout(workout_id: int):
 		db.delete(workout)
 		db.commit()
 		print(f"Workout with ID ${workout_id} deleted successfully")
+	finally:
+		db.close()
+
+def update_workout(workout_id: int, name: Optional[str] = None, reps: Optional[int] = None, weight: Optional[int] = None, sets: Optional[int] = None):
+	db: Session = SessionLocal()
+	try:
+		workout = db.query(models.Workout).filter(models.Workout.id == workout_id).first()
+		if workout is None:
+			print("Workout not found")
+
+		if name is not None:
+			workout.name = name
+		if reps is not None:
+			workout.reps = reps
+		if weight is not None:
+			workout.weight = weight
+		if sets is not None:
+			workout.sets = sets
+
+		db.commit()
+		db.refresh(workout)
+		print(f"Workout with ID ${workout_id} updated successfully")
 	finally:
 		db.close()
 
