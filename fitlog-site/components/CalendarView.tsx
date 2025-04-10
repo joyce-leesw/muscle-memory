@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import Logs from "./Logs";
 
 type Workout = {
-  id: number;
+  id?: number;
   name: string;
   reps: number;
   weight: number;
@@ -18,7 +18,6 @@ type Workout = {
 
 const CalendarView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [workoutsToday, setWorkoutsToday] = useState<Workout[]>([]);
   const [allWorkouts, setAllWorkouts] = useState<Record<string, Workout[]>>({});
   const completedDays: Date[] = [];
 
@@ -30,33 +29,27 @@ const CalendarView: React.FC = () => {
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/get_all_workouts`)
       .then((res) => res.json())
-      .then(onReceive);
-  }, [])
-
-  const onReceive = (data: Workout[]) => {
-    const grouped: Record<string, Workout[]> = {};
-
-    data.forEach((workout) => {
-      if (workout.date) {
-        const dateKey = workout.date.split('T')[0];
-        if (!grouped[dateKey]) {
-          grouped[dateKey] = [];
-        }
-        grouped[dateKey].push(workout);
-      }
-    });
-
-    setAllWorkouts(grouped);
-    console.log(allWorkouts);
-  };
+      .then((data: Workout[]) => {
+        const grouped: Record<string, Workout[]> = {};
+  
+        data.forEach((workout) => {
+          if (workout.date) {
+            const dateKey = workout.date.split('T')[0];
+            if (!grouped[dateKey]) {
+              grouped[dateKey] = [];
+            }
+            grouped[dateKey].push(workout);
+          }
+        });
+  
+        setAllWorkouts(grouped);
+        console.log(allWorkouts);
+      });
+  }, [allWorkouts]);
 
   const onRetrieve = (date: Date | undefined) => {
     if (!date) return;
     setSelectedDate(date);
-    const formattedDate = date.toLocaleDateString("sv-SE", {
-      timeZone: "Europe/London",
-    });
-    setWorkoutsToday(allWorkouts[formattedDate] ?? []);
   }
 
   const gradientTextStyle =
@@ -104,7 +97,7 @@ const CalendarView: React.FC = () => {
                   />
                 </div>
 
-                <Logs workoutsToday={workoutsToday} date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} setWorkoutsToday={setWorkoutsToday} />
+                <Logs date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} allWorkouts={allWorkouts}/>
               </div>
             </div>
           </div>

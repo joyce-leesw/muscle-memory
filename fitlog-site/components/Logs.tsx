@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 type Workout = {
-	id: number;
+	id?: number;
   name: string;
   reps: number;
   weight: number;
@@ -10,12 +10,12 @@ type Workout = {
 }
 
 type Props = {
-  workoutsToday: Workout[];
 	date: string;
-	setWorkoutsToday: React.Dispatch<React.SetStateAction<Workout[]>>;
+	allWorkouts: Record<string, Workout[]>;
 };
 
-const Logs: React.FC<Props> = ({ workoutsToday, date, setWorkoutsToday }) => {
+const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
+	const workoutsToday = allWorkouts[date] || [];
 	const [editWorkoutId, setEditWorkoutId] = useState<number | null>(null);
 	const [addWorkout, setAddWorkout] = useState(false);
 	const [newWorkout, setNewWorkout] = useState({
@@ -64,6 +64,30 @@ const Logs: React.FC<Props> = ({ workoutsToday, date, setWorkoutsToday }) => {
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
+
+			if (isEdit) {
+				allWorkouts[date].map((workout) =>
+					workout.id === editWorkoutId
+						? { 
+							...workout, 
+							name: newWorkout.name,
+							reps: Number(newWorkout.reps),
+							weight: Number(newWorkout.weight),
+							sets: Number(newWorkout.sets)
+							} 
+						: workout
+				);
+			} else {
+				const newLog = 
+				{
+					name: newWorkout.name,
+					reps: Number(newWorkout.reps),
+					weight: Number(newWorkout.weight),
+					sets: Number(newWorkout.sets),
+					date,
+				}
+				allWorkouts[date] = [...(allWorkouts[date] || []), newLog];
+			}
 	
 			const data = await response.json();
 			console.log("Workout saved:", data);
@@ -84,8 +108,7 @@ const Logs: React.FC<Props> = ({ workoutsToday, date, setWorkoutsToday }) => {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 
-			const newArray = workoutsToday.filter((workout) => workout.id !== id);
-			setWorkoutsToday(newArray);
+			allWorkouts[date].filter((workout) => workout.id !== id);
 	
 			const data = await response.json();
 			console.log(data);
