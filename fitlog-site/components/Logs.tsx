@@ -105,30 +105,38 @@ const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
 
 			{addWorkout ? (
 				<div className="mt-10 space-y-4">
+					<label className="block mb-1 text-sm font-medium text-gray-700">
+						Workout name
+					</label>
 					<input
 						type="text"
-						placeholder="Workout name"
 						value={newWorkout.name}
 						onChange={(e) => setNewWorkout({ ...newWorkout, name: e.target.value })}
 						className="w-full px-4 py-2 bg-slate-100 rounded"
 					/>
+					<label className="block mb-1 text-sm font-medium text-gray-700">
+						Reps
+					</label>
 					<input
 						type="number"
-						placeholder="Reps"
 						value={newWorkout.reps}
 						onChange={(e) => handleNumberInput(e, 'reps')}
 						className="w-full px-4 py-2 bg-slate-100 rounded"
 					/>
+					<label className="block mb-1 text-sm font-medium text-gray-700">
+						Weight(kg)
+					</label>
 					<input
 						type="number"
-						placeholder="Weight (kg)"
 						value={newWorkout.weight}
 						onChange={(e) => handleNumberInput(e, 'weight')}
 						className="w-full px-4 py-2 bg-slate-100 rounded"
 					/>
+					<label className="block mb-1 text-sm font-medium text-gray-700">
+						Sets
+					</label>
 					<input
 						type="number"
-						placeholder="Sets"
 						value={newWorkout.sets}
 						onChange={(e) => handleNumberInput(e, 'sets')}
 						className="w-full px-4 py-2 bg-slate-100 rounded"
