@@ -39,11 +39,24 @@ const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
 	};
 
 	const handleSaveWorkout = async () => {
-		const endpoint = editWorkoutId ? 'update_workout' : 'create_workout'
-		const method = editWorkoutId ? "PUT" : "POST";
-		const param = editWorkoutId ? `id=${editWorkoutId}` : `date=${date}`;
+		const isEdit = !!editWorkoutId;
+		const endpoint = isEdit ? 'update_workout' : 'create_workout';
+		const method = isEdit ? 'PUT' : 'POST';
+
+		const params = new URLSearchParams({
+			name: newWorkout.name,
+			reps: newWorkout.reps,
+			weight: newWorkout.weight,
+			sets: newWorkout.sets,
+		});
+
+		if (isEdit) {
+			params.append('id', editWorkoutId.toString());
+		} else {
+			params.append('date', date);
+		}
 		try {
-			const response = await fetch(`http://127.0.0.1:8000/${endpoint}?name=${newWorkout.name}&reps=${newWorkout.reps}&weight=${newWorkout.weight}&sets=${newWorkout.sets}&${param}`, {
+			const response = await fetch(`http://127.0.0.1:8000/${endpoint}?${params.toString()}`, {
 				method,
 			});
 			
