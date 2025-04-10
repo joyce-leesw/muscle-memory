@@ -104,7 +104,7 @@ const CalendarView: React.FC = () => {
                   />
                 </div>
 
-                <Logs workoutsToday={workoutsToday} date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} />
+                <Logs workoutsToday={workoutsToday} date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} setWorkoutsToday={setWorkoutsToday} />
               </div>
             </div>
           </div>

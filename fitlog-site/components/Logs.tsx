@@ -12,9 +12,10 @@ type Workout = {
 type Props = {
   workoutsToday: Workout[];
 	date: string;
+	setWorkoutsToday: React.Dispatch<React.SetStateAction<Workout[]>>;
 };
 
-const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
+const Logs: React.FC<Props> = ({ workoutsToday, date, setWorkoutsToday }) => {
 	const [editWorkoutId, setEditWorkoutId] = useState<number | null>(null);
 	const [addWorkout, setAddWorkout] = useState(false);
 	const [newWorkout, setNewWorkout] = useState({
@@ -82,6 +83,9 @@ const Logs: React.FC<Props> = ({ workoutsToday, date }) => {
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
+
+			const newArray = workoutsToday.filter((workout) => workout.id !== id);
+			setWorkoutsToday(newArray);
 	
 			const data = await response.json();
 			console.log(data);
