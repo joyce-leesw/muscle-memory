@@ -211,13 +211,22 @@ const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
 							<div key={index} className="px-2 text-left">
 								<div className="flex justify-between items-center">
 									<div>
-										<div>
+										<div className="text-md text-gray-500">
 											{log.name}
 										</div>
 										<div className="flex space-x-4">
-											<span>{log.weight}kg</span>
-											<span>{log.reps} reps</span>
-											<span>{log.sets} sets</span>
+										<span className="w-15 justify-between">
+											<span className="text-lg font-bold text-sky-600">{log.weight}</span>
+											<span className="text-sm text-gray-600"> kg</span>
+										</span>
+										<span className="w-15 justify-between">
+											<span className="text-lg font-bold text-sky-600">{log.reps}</span>
+											<span className="text-sm text-gray-600"> reps</span>
+										</span>
+										<span className="w-15 justify-between">
+											<span className="text-lg font-bold text-sky-600 w-4">{log.sets}</span>
+											<span className="text-sm text-gray-600"> sets</span>
+										</span>
 										</div>
 									</div>
 									<button
