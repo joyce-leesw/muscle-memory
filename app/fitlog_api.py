@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
-from typing import List, Optional
+from typing import List
 from datetime import datetime, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from models import Base, WorkoutType, WorkoutSession, Workout
-from schema import WorkoutTypeCreate, WorkoutSessionCreate, WorkoutCreate, WorkoutBase, WorkoutUpdate
+from schema import WorkoutTypeCreate, WorkoutSessionCreate, WorkoutCreate, WorkoutTypeBase, WorkoutSessionBase, WorkoutBase, WorkoutUpdate
 
 Base.metadata.create_all(bind=engine)
 
@@ -35,6 +35,11 @@ def create_workout_type(payload: WorkoutTypeCreate, db: Session = Depends(get_db
 	db.refresh(workout_type)
 	return workout_type
 
+@app.get("/get_workout_types", response_model=List[WorkoutTypeBase])
+def get_workout_types(db: Session = Depends(get_db)):
+	workouts_types = db.query(WorkoutType).all()
+	return workouts_types
+
 @app.post("/workout_session")
 def create_workout_session(payload: WorkoutSessionCreate, db: Session = Depends(get_db)):
 	workout_type = db.query(WorkoutType).filter(WorkoutType.id == payload.workout_type_id).first()
@@ -52,6 +57,11 @@ def create_workout_session(payload: WorkoutSessionCreate, db: Session = Depends(
 	db.commit()
 	db.refresh(workout_session)
 	return workout_session
+
+@app.get("/get_workout_sessions", response_model=List[WorkoutSessionBase])
+def get_workout_sessions(db: Session = Depends(get_db)):
+	workouts_sessions = db.query(WorkoutSession).all()
+	return workouts_sessions
 
 @app.post("/create_workout")
 def create_workout(payload: WorkoutCreate, db: Session = Depends(get_db)):
