@@ -2,11 +2,12 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from typing import List, Optional
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from fastapi.middleware.cors import CORSMiddleware
-import models
+from models import Base, WorkoutType, WorkoutSession, Workout
+from schema import WorkoutTypeCreate, WorkoutSessionCreate, WorkoutCreate, WorkoutBase, WorkoutUpdate
 
-models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -25,9 +26,41 @@ def get_db():
 	finally:
 		db.close()
 
+@app.post("/workout_type")
+def create_workout_type(payload: WorkoutTypeCreate, db: Session = Depends(get_db)):
+	workout_type = WorkoutType(name=payload.name, color=payload.color)
+
+	db.add(workout_type)
+	db.commit()
+	db.refresh(workout_type)
+	return workout_type
+
+@app.post("/workout_session")
+def create_workout_session(payload: WorkoutSessionCreate, db: Session = Depends(get_db)):
+	workout_type = db.query(WorkoutType).filter(WorkoutType.id == payload.workout_type_id).first()
+	if not workout_type:
+		raise HTTPException(status_code=404, detail="Workout type not found")
+
+	session_date = payload.date or datetime.now(timezone.utc)
+
+	workout_session = WorkoutSession(
+		workout_type_id=payload.workout_type_id,
+		date=session_date
+	)
+
+	db.add(workout_session)
+	db.commit()
+	db.refresh(workout_session)
+	return workout_session
+
 @app.post("/create_workout")
-def create_workout(name: str, reps: int, weight: int, sets: int, date: str, db: Session = Depends(get_db)):
-	workout = models.Workout(name=name, reps=reps, weight=weight, sets=sets, date=datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc))
+def create_workout(payload: WorkoutCreate, db: Session = Depends(get_db)):
+	workout_session = db.query(WorkoutSession).filter(WorkoutSession.id == payload.workout_session_id).first()
+	if not workout_session:
+		raise HTTPException(status_code=404, detail="Workout session not found")
+	
+	workout = Workout(name=payload.name, reps=payload.reps, weight=payload.weight, sets=payload.sets, workout_session_id=payload.workout_session_id)
+
 	db.add(workout)
 	db.commit()
 	db.refresh(workout)
@@ -35,7 +68,7 @@ def create_workout(name: str, reps: int, weight: int, sets: int, date: str, db: 
 
 @app.delete("/delete_workout")
 def delete_workout(id: int, db: Session = Depends(get_db)):
-	workout = db.query(models.Workout).filter(models.Workout.id == id).first()
+	workout = db.query(Workout).filter(Workout.id == id).first()
 	if not workout:
 		raise HTTPException(status_code=404, detail="Workout not found")
 
@@ -44,45 +77,26 @@ def delete_workout(id: int, db: Session = Depends(get_db)):
 	return {"message": f"Workout with ID {id} deleted successfully"}
 
 @app.put("/update_workout")
-def update_workout(id: int, name: Optional[str] = None, reps: Optional[int] = None, weight: Optional[int] = None, sets: Optional[int] = None, db: Session = Depends(get_db)):
-	workout = db.query(models.Workout).filter(models.Workout.id == id).first()
+def update_workout(id: int, payload: WorkoutUpdate, db: Session = Depends(get_db)):
+	workout = db.query(Workout).filter(Workout.id == id).first()
+	
 	if not workout:
 		raise HTTPException(status_code=404, detail="Workout not found")
 	
-	if name is not None:
-			workout.name = name
-	if reps is not None:
-		workout.reps = reps
-	if weight is not None:
-		workout.weight = weight
-	if sets is not None:
-		workout.sets = sets
+	if payload.name is not None:
+			workout.name = payload.name
+	if payload.reps is not None:
+		workout.reps = payload.reps
+	if payload.weight is not None:
+		workout.weight = payload.weight
+	if payload.sets is not None:
+		workout.sets = payload.sets
 
 	db.commit()
 	db.refresh(workout)
 	return {"message": f"Workout with ID {id} updated successfully"}
 
-@app.get("/get_all_workouts", response_model=List[models.WorkoutBase])
+@app.get("/get_all_workouts", response_model=List[WorkoutBase])
 def get_all_workouts(db: Session = Depends(get_db)):
-	workouts = db.query(models.Workout).all()
-	return [{"id": workout.id, "name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets, "date": workout.date} for workout in workouts]
-
-@app.get("/get_workouts_for_date", response_model=List[models.WorkoutBase])
-def get_workouts_for_date(date: str, db: Session = Depends(get_db)):
-	try:
-		# Parse input date string (e.g., "2025-04-06")
-		selected_date = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-	except ValueError:
-		raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
-
-	start_of_day = selected_date.replace(hour=0, minute=0, second=0, microsecond=0)
-	end_of_day = start_of_day + timedelta(days=1)
-
-	workouts = db.query(models.Workout).filter(
-		models.Workout.date >= start_of_day,
-		models.Workout.date < end_of_day
-	).all()
-
-	workouts = [{"id": workout.id, "name": workout.name, "reps": workout.reps, "weight": workout.weight, "sets": workout.sets} for workout in workouts]
-	print(workouts)
+	workouts = db.query(Workout).all()
 	return workouts
