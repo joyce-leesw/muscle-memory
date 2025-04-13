@@ -130,6 +130,7 @@ def get_workout_types_with_sessions_and_workouts(db: Session = Depends(get_db)):
 					"sets": workout.sets
 				})
 			sessions.append({
+				"id": session.id,
 				"date": session.date.strftime('%Y-%m-%d'),
 				"workouts": workouts,
 			})

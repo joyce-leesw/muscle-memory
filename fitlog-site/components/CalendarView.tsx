@@ -8,17 +8,37 @@ import { useEffect, useState } from "react";
 import Logs from "./Logs";
 
 type Workout = {
-  id?: number;
+  id: number;
   name: string;
   reps: number;
   weight: number;
   sets: number;
-  date?: string;
 }
+
+type WorkoutSession = {
+  id: number;
+  date: string;
+  workouts: Workout[];
+}
+
+type WorkoutType = {
+  name: string;
+  color: string;
+  sessions: WorkoutSession[];
+}
+
+type WorkoutSessionMap = {
+  [date: string]: {
+    sessionId: number;
+    workouts: Workout[];
+  };
+};
 
 const CalendarView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [allWorkouts, setAllWorkouts] = useState<Record<string, Workout[]>>({});
+  const [allWorkouts, setAllWorkouts] = useState<WorkoutSessionMap>({});
+  const [modifiers, setModifiers] = useState<Record<string, Date[]>>({});
+  const [workoutTypes, setWorkoutTypes] = useState<{ name: string; color: string }[]>([]);
   const completedDays: Date[] = [];
 
   Object.keys(allWorkouts).forEach((dateStr) => {
@@ -27,25 +47,38 @@ const CalendarView: React.FC = () => {
   })
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/get_all_workouts`)
+    fetch(`http://127.0.0.1:8000/get_workout_types_with_sessions_and_workouts`)
       .then((res) => res.json())
-      .then((data: Workout[]) => {
-        const grouped: Record<string, Workout[]> = {};
+      .then((data: WorkoutType[]) => {
+        const sessionMap: WorkoutSessionMap = {};
+        const colorDateMap: Record<string, Date[]> = {};
+        const types: { name: string; color: string }[] = [];
   
-        data.forEach((workout) => {
-          if (workout.date) {
-            const dateKey = workout.date.split('T')[0];
-            if (!grouped[dateKey]) {
-              grouped[dateKey] = [];
+        data.forEach((workoutType) => {
+          const color = workoutType.color;
+          const name = workoutType.name;
+          types.push({ name, color });
+  
+          workoutType.sessions.forEach((session: WorkoutSession) => {
+            const dateObj = new Date(session.date);
+
+            sessionMap[session.date] = {
+              sessionId: session.id,
+              workouts: session.workouts,
+            };
+  
+            if (!colorDateMap[color]) {
+              colorDateMap[color] = [];
             }
-            grouped[dateKey].push(workout);
-          }
+            colorDateMap[color].push(dateObj);
+          });
         });
   
-        setAllWorkouts(grouped);
-        console.log(allWorkouts);
+        setAllWorkouts(sessionMap);
+        setModifiers(colorDateMap);
+        setWorkoutTypes(types);
       });
-  }, [allWorkouts]);
+  }, []); 
 
   const onRetrieve = (date: Date | undefined) => {
     if (!date) return;
@@ -85,18 +118,27 @@ const CalendarView: React.FC = () => {
                     selected={selectedDate}
                     onSelect={onRetrieve}
                     className="bg-white p-4 rounded-xl shadow-lg"
-                    modifiers={{
-                      completed: completedDays
-                    }}
+                    modifiers={modifiers}
                     modifiersClassNames={{
                       selected: 'bg-sky-700 text-white rounded-full',
                       today: 'text-sky-700 font-bold',
-                      completed: 'bg-cyan-500 text-white rounded-full',
+                      green: 'bg-green-500 text-white rounded-full',
+                      cyan: 'bg-cyan-500 text-white rounded-full',
+                      amber: 'bg-amber-500 text-white rounded-full'
                     }}
                     disabled={{ after: new Date() }}
                   />
                 </div>
-
+                <div className="flex flex-wrap justify-center gap-2 mt-4 bg-white rounded-xl">
+                  {workoutTypes.map((type, idx) => (
+                    <div key={idx} className="flex items-center gap-2 my-2">
+                      <span
+                        className={`w-3 h-3 rounded-full inline-block ${`bg-${type.color}-500`}`}
+                      />
+                      <span className="text-sm text-gray-700">{type.name}</span>
+                    </div>
+                  ))}
+                </div>
                 <Logs date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} allWorkouts={allWorkouts}/>
               </div>
             </div>

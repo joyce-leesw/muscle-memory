@@ -1,28 +1,34 @@
 import { useState } from "react";
 
 type Workout = {
-	id?: number;
+	id: number;
   name: string;
   reps: number;
   weight: number;
   sets: number;
-  date?: string;
 }
+
+type WorkoutSessionMap = {
+  [date: string]: {
+    sessionId: number;
+    workouts: Workout[];
+  };
+};
 
 type Props = {
 	date: string;
-	allWorkouts: Record<string, Workout[]>;
+	allWorkouts: WorkoutSessionMap;
 };
 
 const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
-	const workoutsToday = allWorkouts[date] || [];
+	const workoutsToday = allWorkouts[date]?.workouts || [];
 	const [editWorkoutId, setEditWorkoutId] = useState<number | null>(null);
 	const [addWorkout, setAddWorkout] = useState(false);
 	const [newWorkout, setNewWorkout] = useState({
 		name: "",
-		reps: "",
-		weight: "",
-		sets: "",
+		reps: 0,
+		weight: 0,
+		sets: 0,
 	});
 
 	const handleNumberInput = (
@@ -44,49 +50,30 @@ const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
 		const endpoint = isEdit ? 'update_workout' : 'create_workout';
 		const method = isEdit ? 'PUT' : 'POST';
 
-		const params = new URLSearchParams({
+		const body = {
 			name: newWorkout.name,
 			reps: newWorkout.reps,
 			weight: newWorkout.weight,
 			sets: newWorkout.sets,
-		});
+			...(isEdit ? {} : { workout_session_id: allWorkouts[date].sessionId }),
+		};
 
+		let url = `http://127.0.0.1:8000/${endpoint}`;
 		if (isEdit) {
-			params.append('id', editWorkoutId.toString());
-		} else {
-			params.append('date', date);
+			url += `?id=${editWorkoutId}`;
 		}
+
 		try {
-			const response = await fetch(`http://127.0.0.1:8000/${endpoint}?${params.toString()}`, {
+			const response = await fetch(url, {
 				method,
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(body),
 			});
 			
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			if (isEdit) {
-				allWorkouts[date].map((workout) =>
-					workout.id === editWorkoutId
-						? { 
-							...workout, 
-							name: newWorkout.name,
-							reps: Number(newWorkout.reps),
-							weight: Number(newWorkout.weight),
-							sets: Number(newWorkout.sets)
-							} 
-						: workout
-				);
-			} else {
-				const newLog = 
-				{
-					name: newWorkout.name,
-					reps: Number(newWorkout.reps),
-					weight: Number(newWorkout.weight),
-					sets: Number(newWorkout.sets),
-					date,
-				}
-				allWorkouts[date] = [...(allWorkouts[date] || []), newLog];
 			}
 	
 			const data = await response.json();
@@ -108,7 +95,7 @@ const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 
-			allWorkouts[date].filter((workout) => workout.id !== id);
+			allWorkouts[date].workouts.filter((workout) => workout.id !== id);
 	
 			const data = await response.json();
 			console.log(data);
@@ -124,9 +111,9 @@ const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
 		setEditWorkoutId(log.id);
 		setNewWorkout({
 			name: log.name,
-			reps: String(log.reps),
-			weight: String(log.weight),
-			sets: String(log.sets),
+			reps: log.reps,
+			weight: log.weight,
+			sets: log.sets,
 		});
 	}
 
@@ -136,7 +123,7 @@ const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
 				onClick={() => {
 					setAddWorkout(true)
 					setEditWorkoutId(null);
-					setNewWorkout({ name: "", reps: "", weight: "", sets: "" });
+					setNewWorkout({ name: "", reps: 0, weight: 0, sets: 0 });
 				}}
 				className="absolute top-4 right-4 text-white bg-sky-600 hover:bg-sky-700 w-8 h-8 flex items-center justify-center rounded-full shadow"
 			>

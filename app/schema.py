@@ -56,6 +56,7 @@ class WorkoutUpdate(BaseModel):
 		from_attributes = True
 
 class WorkoutSessionWithWorkouts(BaseModel):
+	id: int
 	date: str
 	workouts: List[WorkoutBase]
 
