@@ -94,7 +94,7 @@ def update_workout(id: int, payload: WorkoutUpdate, db: Session = Depends(get_db
 		raise HTTPException(status_code=404, detail="Workout not found")
 	
 	if payload.name is not None:
-			workout.name = payload.name
+		workout.name = payload.name
 	if payload.reps is not None:
 		workout.reps = payload.reps
 	if payload.weight is not None:
