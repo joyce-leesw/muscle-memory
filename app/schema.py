@@ -1,6 +1,7 @@
 from pydantic import BaseModel, validator
 from datetime import datetime
 from typing import Optional
+from typing import List
 
 class WorkoutTypeCreate(BaseModel):
 	name: str
@@ -50,6 +51,21 @@ class WorkoutUpdate(BaseModel):
 	reps: Optional[int] = None
 	weight: Optional[int] = None
 	sets: Optional[int] = None
+
+	class Config:
+		from_attributes = True
+
+class WorkoutSessionWithWorkouts(BaseModel):
+	date: str
+	workouts: List[WorkoutBase]
+
+	class Config:
+		from_attributes = True
+
+class WorkoutTypeFull(BaseModel):
+	name: str
+	color: str
+	sessions: List[WorkoutSessionWithWorkouts]
 
 	class Config:
 		from_attributes = True

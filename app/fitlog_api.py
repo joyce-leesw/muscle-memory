@@ -5,7 +5,7 @@ from typing import List
 from datetime import datetime, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from models import Base, WorkoutType, WorkoutSession, Workout
-from schema import WorkoutTypeCreate, WorkoutSessionCreate, WorkoutCreate, WorkoutTypeBase, WorkoutSessionBase, WorkoutBase, WorkoutUpdate
+from schema import WorkoutTypeCreate, WorkoutSessionCreate, WorkoutCreate, WorkoutTypeBase, WorkoutSessionBase, WorkoutBase, WorkoutUpdate, WorkoutTypeFull
 
 Base.metadata.create_all(bind=engine)
 
@@ -110,3 +110,32 @@ def update_workout(id: int, payload: WorkoutUpdate, db: Session = Depends(get_db
 def get_all_workouts(db: Session = Depends(get_db)):
 	workouts = db.query(Workout).all()
 	return workouts
+
+@app.get("/get_workout_types_with_sessions_and_workouts", response_model=List[WorkoutTypeFull])
+def get_workout_types_with_sessions_and_workouts(db: Session = Depends(get_db)):
+	workouts_types = db.query(WorkoutType).all()
+
+	response = []
+
+	for workout_type in workouts_types:
+		sessions = []
+		for session in workout_type.sessions:
+			workouts = []
+			for workout in session.workouts:
+				workouts.append({
+					"id": workout.id,
+					"name": workout.name,
+					"reps": workout.reps,
+					"weight": workout.weight,
+					"sets": workout.sets
+				})
+			sessions.append({
+				"date": session.date.strftime('%Y-%m-%d'),
+				"workouts": workouts,
+			})
+		response.append({
+			"name": workout_type.name,
+			"color": workout_type.color,
+			"sessions": sessions
+		})
+	return response
