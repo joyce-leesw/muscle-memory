@@ -39,12 +39,6 @@ const CalendarView: React.FC = () => {
   const [allWorkouts, setAllWorkouts] = useState<WorkoutSessionMap>({});
   const [modifiers, setModifiers] = useState<Record<string, Date[]>>({});
   const [workoutTypes, setWorkoutTypes] = useState<{ name: string; color: string }[]>([]);
-  const completedDays: Date[] = [];
-
-  Object.keys(allWorkouts).forEach((dateStr) => {
-    const [year, month, day] = dateStr.split("-").map(Number);
-    completedDays.push(new Date(year, month - 1, day));
-  })
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/get_workout_types_with_sessions_and_workouts`)
@@ -139,7 +133,7 @@ const CalendarView: React.FC = () => {
                     </div>
                   ))}
                 </div>
-                <Logs date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} allWorkouts={allWorkouts}/>
+                <Logs date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} allWorkouts={allWorkouts} workoutTypes={workoutTypes}/>
               </div>
             </div>
           </div>

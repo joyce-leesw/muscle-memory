@@ -18,9 +18,10 @@ type WorkoutSessionMap = {
 type Props = {
 	date: string;
 	allWorkouts: WorkoutSessionMap;
+	workoutTypes: { name: string; color: string }[]
 };
 
-const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
+const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 	const workoutsToday = allWorkouts[date]?.workouts || [];
 	const [editWorkoutId, setEditWorkoutId] = useState<number | null>(null);
 	const [addWorkout, setAddWorkout] = useState(false);
@@ -30,6 +31,7 @@ const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
 		weight: 0,
 		sets: 0,
 	});
+	const [showSessionModal, setShowSessionModal] = useState(false);
 
 	const handleNumberInput = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -117,14 +119,45 @@ const Logs: React.FC<Props> = ({ date, allWorkouts }) => {
 		});
 	}
 
+	const handleAddWorkout = () => {
+		if (!allWorkouts[date]) {
+			setShowSessionModal(true);
+		} else {
+			setAddWorkout(true);
+			setEditWorkoutId(null);
+			setNewWorkout({ name: "", reps: 0, weight: 0, sets: 0 });
+		}
+	}
+
   return (
 		<div className="bg-white p-4 rounded-xl shadow-lg relative my-3 w-full">
+			{showSessionModal && (
+				<div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+					<div className="bg-white rounded-xl p-6 shadow-lg w-80 space-y-4">
+						<h2 className="text-lg font-semibold">Label this day</h2>
+						<div className="space-y-2">
+							{workoutTypes.map((type, index) => (
+								<button key={index} className="flex items-center gap-2 my-2">
+									<span
+										className={`w-3 h-3 rounded-full inline-block ${`bg-${type.color}-500`}`}
+									/>
+									<span className="text-sm text-gray-700">{type.name}</span>
+								</button>
+							))}
+						</div>
+						<div className="flex justify-end gap-2">
+							<button
+								onClick={() => setShowSessionModal(false)}
+								className="px-4 py-2 text-sm bg-gray-200 rounded-md"
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 			<button
-				onClick={() => {
-					setAddWorkout(true)
-					setEditWorkoutId(null);
-					setNewWorkout({ name: "", reps: 0, weight: 0, sets: 0 });
-				}}
+				onClick={handleAddWorkout}
 				className="absolute top-4 right-4 text-white bg-sky-600 hover:bg-sky-700 w-8 h-8 flex items-center justify-center rounded-full shadow"
 			>
 				+
