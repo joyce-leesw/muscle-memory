@@ -18,7 +18,7 @@ type WorkoutSessionMap = {
 type Props = {
 	date: string;
 	allWorkouts: WorkoutSessionMap;
-	workoutTypes: { name: string; color: string }[]
+	workoutTypes: { id: number; name: string; color: string }[]
 };
 
 const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
@@ -129,6 +129,34 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 		}
 	}
 
+	const handleLabel = async(type_id: number) => {
+		const body = {
+			workout_type_id: type_id,
+			date: date,
+		};
+
+		try {
+			const response = await fetch(`http://127.0.0.1:8000/workout_session`, {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(body),
+			});
+			
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+	
+			const data = await response.json();
+			console.log("Session is created:", data);
+			setShowSessionModal(false);
+		} catch (error) {
+			console.error("Failed to create session:", error);
+			alert("Something went wrong while creating a session.");
+		}
+	}
+
   return (
 		<div className="bg-white p-4 rounded-xl shadow-lg relative my-3 w-full">
 			{showSessionModal && (
@@ -137,7 +165,7 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 						<h2 className="text-lg font-semibold">Label this day</h2>
 						<div className="space-y-2">
 							{workoutTypes.map((type, index) => (
-								<button key={index} className="flex items-center gap-2 my-2">
+								<button key={index} className="flex items-center gap-2 my-2 px-3 py-1 rounded hover:bg-gray-100 w-60" onClick={() => handleLabel(type.id)}>
 									<span
 										className={`w-3 h-3 rounded-full inline-block ${`bg-${type.color}-500`}`}
 									/>

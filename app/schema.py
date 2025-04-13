@@ -64,6 +64,7 @@ class WorkoutSessionWithWorkouts(BaseModel):
 		from_attributes = True
 
 class WorkoutTypeFull(BaseModel):
+	id: int
 	name: str
 	color: str
 	sessions: List[WorkoutSessionWithWorkouts]

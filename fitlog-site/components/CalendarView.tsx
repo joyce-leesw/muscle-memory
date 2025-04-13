@@ -22,6 +22,7 @@ type WorkoutSession = {
 }
 
 type WorkoutType = {
+  id: number;
   name: string;
   color: string;
   sessions: WorkoutSession[];
@@ -38,7 +39,7 @@ const CalendarView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [allWorkouts, setAllWorkouts] = useState<WorkoutSessionMap>({});
   const [modifiers, setModifiers] = useState<Record<string, Date[]>>({});
-  const [workoutTypes, setWorkoutTypes] = useState<{ name: string; color: string }[]>([]);
+  const [workoutTypes, setWorkoutTypes] = useState<{ id: number; name: string; color: string }[]>([]);
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/get_workout_types_with_sessions_and_workouts`)
@@ -46,12 +47,13 @@ const CalendarView: React.FC = () => {
       .then((data: WorkoutType[]) => {
         const sessionMap: WorkoutSessionMap = {};
         const colorDateMap: Record<string, Date[]> = {};
-        const types: { name: string; color: string }[] = [];
+        const types: { id: number; name: string; color: string }[] = [];
   
         data.forEach((workoutType) => {
+          const id = workoutType.id;
           const color = workoutType.color;
           const name = workoutType.name;
-          types.push({ name, color });
+          types.push({ id, name, color });
   
           workoutType.sessions.forEach((session: WorkoutSession) => {
             const dateObj = new Date(session.date);

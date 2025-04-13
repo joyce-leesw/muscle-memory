@@ -135,6 +135,7 @@ def get_workout_types_with_sessions_and_workouts(db: Session = Depends(get_db)):
 				"workouts": workouts,
 			})
 		response.append({
+			"id": workout_type.id,
 			"name": workout_type.name,
 			"color": workout_type.color,
 			"sessions": sessions
