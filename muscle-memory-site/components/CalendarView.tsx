@@ -1,6 +1,6 @@
 "use client";
 
-import logo from "../public/fitlog.png";
+import logo from "../public/muscle-memory.png";
 import Image from "next/image";
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
@@ -94,11 +94,11 @@ const CalendarView: React.FC = () => {
                 src={logo}
                 width={60}
                 className="rotate-90"
-                alt="Fitlog logo"
+                alt="Muscle Memory logo"
               />
               <div>
                 <h1 className={`${gradientTextStyle} text-3xl font-light`}>
-                  Fitlog
+                  Muscle Memory
                 </h1>
                 <div className={`${gradientTextStyle} text-lg`}>
                   Your workout logs
