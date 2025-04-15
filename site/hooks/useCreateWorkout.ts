@@ -1,24 +1,4 @@
-type NewWorkout = {
-	name: string;
-	reps: number;
-	weight: number;
-	sets: number;
-}
-
-type Workout = {
-	id: number;
-  name: string;
-  reps: number;
-  weight: number;
-  sets: number;
-}
-
-type WorkoutSessionMap = {
-  [date: string]: {
-    sessionId: number;
-    workouts: Workout[];
-  };
-};
+import { WorkoutSessionMap, NewWorkout } from "@/types/workout";
 
 export const useCreateWorkout = (
 	allWorkouts: WorkoutSessionMap,

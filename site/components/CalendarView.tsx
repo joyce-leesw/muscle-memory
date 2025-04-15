@@ -6,34 +6,7 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { useEffect, useState } from "react";
 import Logs from "./Logs";
-
-type Workout = {
-  id: number;
-  name: string;
-  reps: number;
-  weight: number;
-  sets: number;
-}
-
-type WorkoutSession = {
-  id: number;
-  date: string;
-  workouts: Workout[];
-}
-
-type WorkoutType = {
-  id: number;
-  name: string;
-  color: string;
-  sessions: WorkoutSession[];
-}
-
-type WorkoutSessionMap = {
-  [date: string]: {
-    sessionId: number;
-    workouts: Workout[];
-  };
-};
+import { WorkoutSessionMap, WorkoutType, WorkoutSession } from "@/types/workout";
 
 const CalendarView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());

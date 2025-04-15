@@ -1,9 +1,4 @@
-type UpdatedWorkout = {
-	name: string;
-	reps: number;
-	weight: number;
-	sets: number;
-}
+import { NewWorkout as UpdatedWorkout } from "@/types/workout";
 
 export const useUpdateWorkout = (
 	setAddWorkout: (val: boolean) => void

@@ -3,21 +3,7 @@ import { useCreateWorkout } from "@/hooks/useCreateWorkout";
 import { useUpdateWorkout } from "@/hooks/useUpdateWorkout";
 import { useDeleteWorkout } from "@/hooks/useDeleteWorkout";
 import { useCreateWorkoutSession } from "@/hooks/useCreateWorkoutSession";
-
-type Workout = {
-	id: number;
-  name: string;
-  reps: number;
-  weight: number;
-  sets: number;
-}
-
-type WorkoutSessionMap = {
-  [date: string]: {
-    sessionId: number;
-    workouts: Workout[];
-  };
-};
+import { WorkoutSessionMap, Workout } from "@/types/workout";
 
 type Props = {
 	date: string;
