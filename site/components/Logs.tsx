@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { useCreateWorkout } from "@/hooks/useCreateWorkout";
+import { useUpdateWorkout } from "@/hooks/useUpdateWorkout";
+import { useDeleteWorkout } from "@/hooks/useDeleteWorkout";
+import { useCreateWorkoutSession } from "@/hooks/useCreateWorkoutSession";
 
 type Workout = {
 	id: number;
@@ -33,6 +37,11 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 	});
 	const [showSessionModal, setShowSessionModal] = useState(false);
 
+	const setCreateWorkout = useCreateWorkout(allWorkouts, date, setAddWorkout);
+	const setUpdateWorkout = useUpdateWorkout(setAddWorkout);
+	const setDeleteWorkout = useDeleteWorkout(setAddWorkout);
+	const setCreateWorkoutSession = useCreateWorkoutSession(date, setShowSessionModal);
+
 	const handleNumberInput = (
 		e: React.ChangeEvent<HTMLInputElement>,
 		key: keyof typeof newWorkout,
@@ -49,63 +58,16 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 
 	const handleSaveWorkout = async () => {
 		const isEdit = !!editWorkoutId;
-		const endpoint = isEdit ? 'update_workout' : 'create_workout';
-		const method = isEdit ? 'PUT' : 'POST';
 
-		const body = {
-			name: newWorkout.name,
-			reps: newWorkout.reps,
-			weight: newWorkout.weight,
-			sets: newWorkout.sets,
-			...(isEdit ? {} : { workout_session_id: allWorkouts[date].sessionId }),
-		};
-
-		let url = `http://127.0.0.1:8000/${endpoint}`;
 		if (isEdit) {
-			url += `?id=${editWorkoutId}`;
-		}
-
-		try {
-			const response = await fetch(url, {
-				method,
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(body),
-			});
-			
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-	
-			const data = await response.json();
-			console.log("Workout saved:", data);
-			setAddWorkout(false)
-		} catch (error) {
-			console.error("Failed to save workout:", error);
-			alert("Something went wrong while saving the workout.");
+			setUpdateWorkout(editWorkoutId, newWorkout);
+		} else {
+			setCreateWorkout(newWorkout);
 		}
 	};
 
 	const handleDeleteWorkout = async (id: number) => {
-		try {
-			const response = await fetch(`http://127.0.0.1:8000/delete_workout?id=${id}`, {
-				method: "DELETE",
-			});
-			
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			allWorkouts[date].workouts.filter((workout) => workout.id !== id);
-	
-			const data = await response.json();
-			console.log(data);
-			setAddWorkout(false)
-		} catch (error) {
-			console.error("Failed to delete workout:", error);
-			alert("Something went wrong while deleting the workout.");
-		}
+		setDeleteWorkout(id);
 	}
 
 	const handleEditWorkout = (log: Workout) => {
@@ -130,31 +92,7 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 	}
 
 	const handleLabel = async(type_id: number) => {
-		const body = {
-			workout_type_id: type_id,
-			date: date,
-		};
-
-		try {
-			const response = await fetch(`http://127.0.0.1:8000/workout_session`, {
-				method: "POST",
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(body),
-			});
-			
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-	
-			const data = await response.json();
-			console.log("Session is created:", data);
-			setShowSessionModal(false);
-		} catch (error) {
-			console.error("Failed to create session:", error);
-			alert("Something went wrong while creating a session.");
-		}
+		setCreateWorkoutSession(type_id);
 	}
 
   return (
