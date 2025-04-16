@@ -113,31 +113,4 @@ def get_all_workouts(db: Session = Depends(get_db)):
 
 @app.get("/get_workout_types_with_sessions_and_workouts", response_model=List[WorkoutTypeFull])
 def get_workout_types_with_sessions_and_workouts(db: Session = Depends(get_db)):
-	workouts_types = db.query(WorkoutType).all()
-
-	response = []
-
-	for workout_type in workouts_types:
-		sessions = []
-		for session in workout_type.sessions:
-			workouts = []
-			for workout in session.workouts:
-				workouts.append({
-					"id": workout.id,
-					"name": workout.name,
-					"reps": workout.reps,
-					"weight": workout.weight,
-					"sets": workout.sets
-				})
-			sessions.append({
-				"id": session.id,
-				"date": session.date.strftime('%Y-%m-%d'),
-				"workouts": workouts,
-			})
-		response.append({
-			"id": workout_type.id,
-			"name": workout_type.name,
-			"color": workout_type.color,
-			"sessions": sessions
-		})
-	return response
+	return db.query(WorkoutType).all()

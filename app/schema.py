@@ -26,6 +26,7 @@ class WorkoutSessionBase(BaseModel):
 		if isinstance(v, datetime):
 			return v.strftime('%Y-%m-%d')
 		return v
+	
 	class Config:
 		from_attributes = True
 
@@ -59,6 +60,12 @@ class WorkoutSessionWithWorkouts(BaseModel):
 	id: int
 	date: str
 	workouts: List[WorkoutBase]
+
+	@validator('date', pre=True)
+	def format_date(cls, v):
+		if isinstance(v, datetime):
+			return v.strftime('%Y-%m-%d')
+		return v
 
 	class Config:
 		from_attributes = True
