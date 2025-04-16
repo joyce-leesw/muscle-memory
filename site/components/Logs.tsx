@@ -4,6 +4,7 @@ import { useUpdateWorkout } from "@/hooks/useUpdateWorkout";
 import { useDeleteWorkout } from "@/hooks/useDeleteWorkout";
 import { useCreateWorkoutSession } from "@/hooks/useCreateWorkoutSession";
 import { WorkoutSessionMap, Workout } from "@/types/workout";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
 	date: string;
@@ -22,6 +23,7 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 		sets: 0,
 	});
 	const [showSessionModal, setShowSessionModal] = useState(false);
+	const queryClient = useQueryClient();
 
 	const setCreateWorkout = useCreateWorkout(allWorkouts, date, setAddWorkout);
 	const setUpdateWorkout = useUpdateWorkout(setAddWorkout);
@@ -44,16 +46,25 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 
 	const handleSaveWorkout = async () => {
 		const isEdit = !!editWorkoutId;
-
-		if (isEdit) {
-			setUpdateWorkout(editWorkoutId, newWorkout);
-		} else {
-			setCreateWorkout(newWorkout);
+		try {
+			if (isEdit) {
+				await setUpdateWorkout(editWorkoutId, newWorkout);
+			} else {
+				await setCreateWorkout(newWorkout);
+			}
+			queryClient.invalidateQueries({ queryKey: ["workoutTypes"] });
+		} catch (error) {
+			console.error("Error deleting workout", error);
 		}
 	};
 
 	const handleDeleteWorkout = async (id: number) => {
-		setDeleteWorkout(id);
+		try {
+			await setDeleteWorkout(id);
+			queryClient.invalidateQueries({ queryKey: ["workoutTypes"] });
+		} catch (error) {
+			console.error("Error deleting workout", error);
+		}
 	}
 
 	const handleEditWorkout = (log: Workout) => {
@@ -78,7 +89,12 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 	}
 
 	const handleLabel = async(type_id: number) => {
-		setCreateWorkoutSession(type_id);
+		try {
+			await setCreateWorkoutSession(type_id);
+			queryClient.invalidateQueries({ queryKey: ["workoutTypes"] });
+		} catch (error) {
+			console.error("Error deleting workout", error);
+		}
 	}
 
   return (

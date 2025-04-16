@@ -6,48 +6,11 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { useEffect, useState } from "react";
 import Logs from "./Logs";
-import { WorkoutSessionMap, WorkoutType, WorkoutSession } from "@/types/workout";
+import { useGetWorkoutTypesData } from "@/hooks/useGetWorkoutData";
 
 const CalendarView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [allWorkouts, setAllWorkouts] = useState<WorkoutSessionMap>({});
-  const [modifiers, setModifiers] = useState<Record<string, Date[]>>({});
-  const [workoutTypes, setWorkoutTypes] = useState<{ id: number; name: string; color: string }[]>([]);
-
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/get_workout_types_with_sessions_and_workouts`)
-      .then((res) => res.json())
-      .then((data: WorkoutType[]) => {
-        const sessionMap: WorkoutSessionMap = {};
-        const colorDateMap: Record<string, Date[]> = {};
-        const types: { id: number; name: string; color: string }[] = [];
-  
-        data.forEach((workoutType) => {
-          const id = workoutType.id;
-          const color = workoutType.color;
-          const name = workoutType.name;
-          types.push({ id, name, color });
-  
-          workoutType.sessions.forEach((session: WorkoutSession) => {
-            const dateObj = new Date(session.date);
-
-            sessionMap[session.date] = {
-              sessionId: session.id,
-              workouts: session.workouts,
-            };
-  
-            if (!colorDateMap[color]) {
-              colorDateMap[color] = [];
-            }
-            colorDateMap[color].push(dateObj);
-          });
-        });
-  
-        setAllWorkouts(sessionMap);
-        setModifiers(colorDateMap);
-        setWorkoutTypes(types);
-      });
-  }, []); 
+  const { data, isSuccess } = useGetWorkoutTypesData();
 
   const onRetrieve = (date: Date | undefined) => {
     if (!date) return;
@@ -87,7 +50,7 @@ const CalendarView: React.FC = () => {
                     selected={selectedDate}
                     onSelect={onRetrieve}
                     className="bg-white p-4 rounded-xl shadow-lg"
-                    modifiers={modifiers}
+                    modifiers={data?.colorDateMap}
                     modifiersClassNames={{
                       selected: 'bg-sky-700 text-white rounded-full',
                       today: 'text-sky-700 font-bold',
@@ -99,7 +62,7 @@ const CalendarView: React.FC = () => {
                   />
                 </div>
                 <div className="flex flex-wrap justify-center gap-2 mt-4 bg-white rounded-xl">
-                  {workoutTypes.map((type, idx) => (
+                  {data?.types.map((type, idx) => (
                     <div key={idx} className="flex items-center gap-2 my-2">
                       <span
                         className={`w-3 h-3 rounded-full inline-block ${`bg-${type.color}-500`}`}
@@ -108,7 +71,7 @@ const CalendarView: React.FC = () => {
                     </div>
                   ))}
                 </div>
-                <Logs date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} allWorkouts={allWorkouts} workoutTypes={workoutTypes}/>
+                <Logs date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} allWorkouts={data?.sessionMap ?? {}} workoutTypes={data?.types ?? []}/>
               </div>
             </div>
           </div>
