@@ -25,10 +25,10 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 	const [showSessionModal, setShowSessionModal] = useState(false);
 	const queryClient = useQueryClient();
 
-	const setCreateWorkout = useCreateWorkout(allWorkouts, date, setAddWorkout);
-	const setUpdateWorkout = useUpdateWorkout(setAddWorkout);
-	const setDeleteWorkout = useDeleteWorkout(setAddWorkout);
-	const setCreateWorkoutSession = useCreateWorkoutSession(date, setShowSessionModal);
+	const createWorkoutMutation = useCreateWorkout(allWorkouts, date, setAddWorkout);
+	const updateWorkoutMutation = useUpdateWorkout(setAddWorkout);
+	const deleteWorkoutMutation = useDeleteWorkout(setAddWorkout);
+	const createWorkoutSessionMutation = useCreateWorkoutSession(date, setShowSessionModal);
 
 	const handleNumberInput = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -44,13 +44,13 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 		}
 	};
 
-	const handleSaveWorkout = async () => {
+	const handleSaveWorkout = () => {
 		const isEdit = !!editWorkoutId;
 		try {
 			if (isEdit) {
-				await setUpdateWorkout(editWorkoutId, newWorkout);
+				updateWorkoutMutation.mutate({ id: editWorkoutId, updatedWorkout: newWorkout });
 			} else {
-				await setCreateWorkout(newWorkout);
+				createWorkoutMutation.mutate(newWorkout);
 			}
 			queryClient.invalidateQueries({ queryKey: ["workoutTypes"] });
 		} catch (error) {
@@ -58,13 +58,8 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 		}
 	};
 
-	const handleDeleteWorkout = async (id: number) => {
-		try {
-			await setDeleteWorkout(id);
-			queryClient.invalidateQueries({ queryKey: ["workoutTypes"] });
-		} catch (error) {
-			console.error("Error deleting workout", error);
-		}
+	const handleDeleteWorkout = (id: number) => {
+		deleteWorkoutMutation.mutate(id);
 	}
 
 	const handleEditWorkout = (log: Workout) => {
@@ -88,13 +83,8 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 		}
 	}
 
-	const handleLabel = async(type_id: number) => {
-		try {
-			await setCreateWorkoutSession(type_id);
-			queryClient.invalidateQueries({ queryKey: ["workoutTypes"] });
-		} catch (error) {
-			console.error("Error deleting workout", error);
-		}
+	const handleLabel = (type_id: number) => {
+		createWorkoutSessionMutation.mutate(type_id)
 	}
 
   return (
@@ -172,8 +162,8 @@ const Logs: React.FC<Props> = ({ date, allWorkouts, workoutTypes }) => {
 					<div className="flex justify-end space-x-2">
 						{editWorkoutId && (
 							<button
-							onClick={() => handleDeleteWorkout(editWorkoutId)}
-							className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+								onClick={() => handleDeleteWorkout(editWorkoutId)}
+								className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
 							>
 								Delete
 							</button>
