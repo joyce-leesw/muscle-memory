@@ -4,13 +4,13 @@ import logo from "../public/muscle-memory.png";
 import Image from "next/image";
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Logs from "./Logs";
 import { useGetWorkoutTypesData } from "@/hooks/useGetWorkoutData";
 
 const CalendarView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const { data, isSuccess } = useGetWorkoutTypesData();
+  const { data } = useGetWorkoutTypesData();
 
   const onRetrieve = (date: Date | undefined) => {
     if (!date) return;
