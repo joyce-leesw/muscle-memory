@@ -9,6 +9,7 @@ export type Workout = {
 export type WorkoutSession = {
   id: number;
   date: string;
+  volume: number;
   workouts: Workout[];
 }
 

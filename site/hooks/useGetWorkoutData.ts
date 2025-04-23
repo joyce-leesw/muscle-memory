@@ -5,6 +5,7 @@ type WorkoutTypesData = {
   sessionMap: WorkoutSessionMap;
   colorDateMap: Record<string, Date[]>;
   types: { id: number; name: string; color: string }[];
+  allData: WorkoutType[];
 };
 
 export const useGetWorkoutTypesData = () => {
@@ -41,6 +42,7 @@ export const useGetWorkoutTypesData = () => {
         sessionMap,
         colorDateMap,
         types,
+        allData: data
       };
     },
   });

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, computed_field
 from datetime import datetime
 from typing import Optional
 from typing import List
@@ -66,6 +66,11 @@ class WorkoutSessionWithWorkouts(BaseModel):
 		if isinstance(v, datetime):
 			return v.strftime('%Y-%m-%d')
 		return v
+	
+	@computed_field
+	@property
+	def volume(self) -> int:
+		return sum(w.sets * w.reps * w.weight for w in self.workouts)
 
 	class Config:
 		from_attributes = True
