@@ -88,5 +88,13 @@ class WorkoutTypeFull(BaseModel):
 	color: str
 	sessions: List[WorkoutSessionWithWorkouts]
 
+	@computed_field
+	@property
+	def average(self) -> int:
+		if not self.sessions:
+			return 0
+		total_volume = sum(session.volume for session in self.sessions)
+		return total_volume // len(self.sessions)
+
 	class Config:
 		from_attributes = True

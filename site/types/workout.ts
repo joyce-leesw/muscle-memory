@@ -18,6 +18,7 @@ export type WorkoutType = {
   name: string;
   color: string;
   sessions: WorkoutSession[];
+  average: number;
 }
 
 export type WorkoutSessionMap = {
