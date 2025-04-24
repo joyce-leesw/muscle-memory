@@ -10,7 +10,8 @@ const Overview: React.FC = () => {
   const [graphData, setGraphData] = useState<{ date: string; volume: number }[]>([]);
 	const { data } = useGetWorkoutTypesData();
   const yearToFirstDateMap = new Map<string, string>();
-  graphData.forEach(({ date }) => {
+  const chronologicalData = [...graphData].reverse();
+  chronologicalData.forEach(({ date }) => {
     const year = new Date(date).getFullYear().toString();
     if (!yearToFirstDateMap.has(year)) {
       yearToFirstDateMap.set(year, date);
@@ -50,9 +51,9 @@ const Overview: React.FC = () => {
         </select>
       </div>
 
-      {graphData.length > 0 ? (
+      {chronologicalData.length > 0 ? (
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={graphData} margin={{ bottom: 20 }}>
+          <LineChart data={chronologicalData} margin={{ bottom: 20 }}>
             <CartesianGrid stroke="#ccc" />
             <XAxis dataKey="date" label={{ value: "Time", position: "insideBottom", dy: 20 }} ticks={yearTicks} tickFormatter={(date) => new Date(date).getFullYear().toString()}/>
             <YAxis label={{ value: "Total Volume (kg)", angle: -90, position: "insideLeft", dy: 50 }} />
