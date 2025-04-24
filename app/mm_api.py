@@ -5,7 +5,7 @@ from typing import List
 from datetime import datetime, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from models import Base, WorkoutType, WorkoutSession, Workout
-from schema import WorkoutTypeCreate, WorkoutSessionCreate, WorkoutCreate, WorkoutTypeBase, WorkoutSessionBase, WorkoutBase, WorkoutUpdate, WorkoutTypeFull
+from schema import WorkoutTypeCreate, WorkoutTypeUpdate, WorkoutSessionCreate, WorkoutCreate, WorkoutTypeBase, WorkoutSessionBase, WorkoutBase, WorkoutUpdate, WorkoutTypeFull
 
 Base.metadata.create_all(bind=engine)
 
@@ -34,6 +34,31 @@ def create_workout_type(payload: WorkoutTypeCreate, db: Session = Depends(get_db
 	db.commit()
 	db.refresh(workout_type)
 	return workout_type
+
+@app.put("/update_workout_type")
+def update_workout_type(id: int, payload: WorkoutTypeUpdate, db: Session = Depends(get_db)):
+	workout_type = db.query(WorkoutType).filter(WorkoutType.id == id).first()
+	if not workout_type:
+		raise HTTPException(status_code=404, detail="Workout type not found")
+	
+	if payload.name is not None:
+		workout_type.name = payload.name
+	if payload.color is not None:
+		workout_type.color = payload.color
+
+	db.commit()
+	db.refresh(workout_type)
+	return {"message": f"Workout type with ID {id} updated successfully"}
+
+@app.delete("/delete_workout_type")
+def delete_workout_type(id: int, db: Session = Depends(get_db)):
+	workout_type = db.query(WorkoutType).filter(WorkoutType.id == id).first()
+	if not workout_type:
+		raise HTTPException(status_code=404, detail="Workout type not found")
+
+	db.delete(workout_type)
+	db.commit()
+	return {"message": f"Workout type with ID {id} deleted successfully"}
 
 @app.get("/get_workout_types", response_model=List[WorkoutTypeBase])
 def get_workout_types(db: Session = Depends(get_db)):
@@ -89,7 +114,6 @@ def delete_workout(id: int, db: Session = Depends(get_db)):
 @app.put("/update_workout")
 def update_workout(id: int, payload: WorkoutUpdate, db: Session = Depends(get_db)):
 	workout = db.query(Workout).filter(Workout.id == id).first()
-	
 	if not workout:
 		raise HTTPException(status_code=404, detail="Workout not found")
 	

@@ -35,9 +35,9 @@ const CalendarView: React.FC = () => {
             disabled={{ after: new Date() }}
           />
         </div>
-        <div className="flex flex-wrap justify-center gap-2 mt-4 bg-white rounded-xl">
+        <div className="flex flex-wrap justify-center gap-2 mt-4 bg-white rounded-xl py-1">
           {data?.types.map((type, idx) => (
-            <div key={idx} className="flex items-center gap-2 my-2">
+            <div key={idx} className="flex items-center gap-2 my-1 mx-2">
               <span
                 className={`w-3 h-3 rounded-full inline-block ${`bg-${type.color}-500`}`}
               />

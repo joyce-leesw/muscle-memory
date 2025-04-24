@@ -14,6 +14,13 @@ class WorkoutTypeBase(BaseModel):
 	class Config:
 		from_attributes = True
 
+class WorkoutTypeUpdate(BaseModel):
+	name: Optional[str] = None
+	color: Optional[str] = None
+
+	class Config:
+		from_attributes = True
+
 class WorkoutSessionCreate(BaseModel):
 	workout_type_id: int
 	date: Optional[datetime] = None
