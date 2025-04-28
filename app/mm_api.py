@@ -81,6 +81,35 @@ def create_workout_session(payload: WorkoutSessionCreate, db: Session = Depends(
 	)
 
 	db.add(workout_session)
+	db.flush()
+
+	last_session = (
+		db.query(WorkoutSession)
+		.filter(
+			WorkoutSession.workout_type_id == payload.workout_type_id,
+			WorkoutSession.id != workout_session.id
+		)
+		.order_by(WorkoutSession.date.desc())
+		.first()
+	)
+
+	if last_session:
+		prev_exercises = (
+			db.query(Workout)
+			.filter(Workout.workout_session_id == last_session.id)
+			.all()
+		)
+
+		for prev_exercise in prev_exercises:
+			new_exercise = Workout(
+				name=prev_exercise.name,
+				reps=prev_exercise.reps,
+				weight=prev_exercise.weight,
+				sets=prev_exercise.sets,
+				workout_session_id=workout_session.id
+			)
+			db.add(new_exercise)
+	
 	db.commit()
 	db.refresh(workout_session)
 	return workout_session
