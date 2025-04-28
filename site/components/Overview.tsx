@@ -35,7 +35,7 @@ const Overview: React.FC = () => {
 
     setGraphData(transformed);
     setAverage(workoutType.average);
-    setTarget(50);
+    setTarget(workoutType.target || 0);
   }, [selectedType, data]);
 
   return (

@@ -11,6 +11,7 @@ class WorkoutType(Base):
 	id = Column(Integer, primary_key=True, index=True)
 	name = Column(String, nullable=False)
 	color = Column(String, nullable=False)
+	target = Column(Integer, nullable=True)
 
 	sessions = relationship("WorkoutSession", back_populates="workout_type")
 

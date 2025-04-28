@@ -45,6 +45,8 @@ def update_workout_type(id: int, payload: WorkoutTypeUpdate, db: Session = Depen
 		workout_type.name = payload.name
 	if payload.color is not None:
 		workout_type.color = payload.color
+	if payload.target is not None:
+		workout_type.target = payload.target
 
 	db.commit()
 	db.refresh(workout_type)

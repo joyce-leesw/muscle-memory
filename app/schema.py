@@ -10,6 +10,7 @@ class WorkoutTypeCreate(BaseModel):
 class WorkoutTypeBase(BaseModel):
 	name: str
 	color: str
+	target: Optional[int] = None 
 
 	class Config:
 		from_attributes = True
@@ -17,6 +18,7 @@ class WorkoutTypeBase(BaseModel):
 class WorkoutTypeUpdate(BaseModel):
 	name: Optional[str] = None
 	color: Optional[str] = None
+	target: Optional[int] = None 
 
 	class Config:
 		from_attributes = True
@@ -86,6 +88,7 @@ class WorkoutTypeFull(BaseModel):
 	id: int
 	name: str
 	color: str
+	target: Optional[int] = None 
 	sessions: List[WorkoutSessionWithWorkouts]
 
 	@computed_field

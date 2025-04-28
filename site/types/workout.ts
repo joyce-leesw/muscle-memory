@@ -17,6 +17,7 @@ export type WorkoutType = {
   id: number;
   name: string;
   color: string;
+  target?: number | null;
   sessions: WorkoutSession[];
   average: number;
 }
