@@ -85,6 +85,16 @@ def create_workout_session(payload: WorkoutSessionCreate, db: Session = Depends(
 	db.refresh(workout_session)
 	return workout_session
 
+@app.delete("/delete_workout_session")
+def delete_workout_session(id: int, db: Session = Depends(get_db)):
+	workout_session = db.query(WorkoutSession).filter(WorkoutSession.id == id).first()
+	if not workout_session:
+		raise HTTPException(status_code=404, detail="Workout session not found")
+
+	db.delete(workout_session)
+	db.commit()
+	return {"message": f"Workout session with ID {id} deleted successfully"}
+
 @app.get("/get_workout_sessions", response_model=List[WorkoutSessionBase])
 def get_workout_sessions(db: Session = Depends(get_db)):
 	workouts_sessions = db.query(WorkoutSession).all()
