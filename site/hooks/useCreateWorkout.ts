@@ -4,7 +4,7 @@ import { WorkoutSessionMap, NewWorkout } from "@/types/workout";
 export const useCreateWorkout = (
   allWorkouts: WorkoutSessionMap,
   date: string,
-  setAddWorkout: (val: boolean) => void
+  setAddWorkout: (val: boolean) => void,
 ) => {
   const queryClient = useQueryClient();
 

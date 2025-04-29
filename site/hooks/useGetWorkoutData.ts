@@ -12,7 +12,9 @@ export const useGetWorkoutTypesData = () => {
   return useQuery<WorkoutTypesData>({
     queryKey: ["workoutTypes"],
     queryFn: async () => {
-      const res = await fetch("http://127.0.0.1:8000/get_workout_types_with_sessions_and_workouts");
+      const res = await fetch(
+        "http://127.0.0.1:8000/get_workout_types_with_sessions_and_workouts",
+      );
       const data: WorkoutType[] = await res.json();
 
       const sessionMap: WorkoutSessionMap = {};
@@ -42,7 +44,7 @@ export const useGetWorkoutTypesData = () => {
         sessionMap,
         colorDateMap,
         types,
-        allData: data
+        allData: data,
       };
     },
   });

@@ -1,15 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const useDeleteWorkout = (
-  setAddWorkout: (val: boolean) => void
-) => {
+export const useDeleteWorkout = (setAddWorkout: (val: boolean) => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: number) => {
       const response = await fetch(
         `http://127.0.0.1:8000/delete_workout?id=${id}`,
-        { method: "DELETE" }
+        { method: "DELETE" },
       );
 
       if (!response.ok) {
@@ -29,4 +27,3 @@ export const useDeleteWorkout = (
     },
   });
 };
-

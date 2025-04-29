@@ -1,9 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { NewWorkout as UpdatedWorkout } from "@/types/workout";
 
-export const useUpdateWorkout = (
-  setAddWorkout: (val: boolean) => void
-) => {
+export const useUpdateWorkout = (setAddWorkout: (val: boolean) => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -27,7 +25,7 @@ export const useUpdateWorkout = (
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -47,4 +45,3 @@ export const useUpdateWorkout = (
     },
   });
 };
-

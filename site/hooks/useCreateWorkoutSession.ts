@@ -7,7 +7,7 @@ type CreateSessionBody = {
 
 export const useCreateWorkoutSession = (
   date: string,
-  setShowSessionModal: (val: boolean) => void
+  setShowSessionModal: (val: boolean) => void,
 ) => {
   const queryClient = useQueryClient();
 
@@ -43,4 +43,3 @@ export const useCreateWorkoutSession = (
     },
   });
 };
-

@@ -1,7 +1,7 @@
 "use client";
 
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
 import { useState } from "react";
 import Logs from "./Logs";
 import { useGetWorkoutTypesData } from "@/hooks/useGetWorkoutData";
@@ -13,11 +13,11 @@ const CalendarView: React.FC = () => {
   const onRetrieve = (date: Date | undefined) => {
     if (!date) return;
     setSelectedDate(date);
-  }
+  };
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <div className="w-[320px]"> 
+      <div className="w-[320px]">
         <div className="flex justify-center">
           <DayPicker
             mode="single"
@@ -26,11 +26,11 @@ const CalendarView: React.FC = () => {
             className="bg-white p-4 rounded-xl shadow-lg"
             modifiers={data?.colorDateMap}
             modifiersClassNames={{
-              selected: 'bg-sky-700 text-white rounded-full',
-              today: 'text-sky-700 font-bold',
-              green: 'bg-green-500 text-white rounded-full',
-              cyan: 'bg-cyan-500 text-white rounded-full',
-              amber: 'bg-amber-500 text-white rounded-full'
+              selected: "bg-sky-700 text-white rounded-full",
+              today: "text-sky-700 font-bold",
+              green: "bg-green-500 text-white rounded-full",
+              cyan: "bg-cyan-500 text-white rounded-full",
+              amber: "bg-amber-500 text-white rounded-full",
             }}
             disabled={{ after: new Date() }}
           />
@@ -45,7 +45,13 @@ const CalendarView: React.FC = () => {
             </div>
           ))}
         </div>
-        <Logs date={selectedDate.toLocaleDateString("sv-SE", {timeZone: "Europe/London"})} allWorkouts={data?.sessionMap ?? {}} workoutTypes={data?.types ?? []}/>
+        <Logs
+          date={selectedDate.toLocaleDateString("sv-SE", {
+            timeZone: "Europe/London",
+          })}
+          allWorkouts={data?.sessionMap ?? {}}
+          workoutTypes={data?.types ?? []}
+        />
       </div>
     </div>
   );
